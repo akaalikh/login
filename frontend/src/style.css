@@ -73,3 +73,8 @@ input:focus {
   border: 1px solid #1295a1;
   cursor: pointer;
 }
+
+.btn-logout {
+  color: #a40000;
+  border-color: #a40000;
+}
