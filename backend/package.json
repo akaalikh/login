@@ -16,7 +16,8 @@
     "start": "node --env-file=.env src/index.js",
     "dev": "node --watch --env-file=.env src/index.js",
     "db:setup": "node --env-file=.env src/scripts/setup.js",
-    "db:clear": "node --env-file=.env src/scripts/clear.js"
+    "db:clear": "node --env-file=.env src/scripts/clear.js",
+    "db:delete": "node --env-file=.env src/scripts/delete.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

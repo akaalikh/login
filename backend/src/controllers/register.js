@@ -1,21 +1,21 @@
 import { createUser } from "../models/user.model.js";
-import { hash } from "../utils/hash.js";
+import { hashPassword } from "../utils/hash.js";
 
 export const register = async (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
+    const { email, username, password } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).json({ error: "Username and password are required" });
+    if (!username || !password || !email) {
+        return res.status(400).json({ error: "missing required fields." });
     }
 
     try {
-        password = await hash(password);
-        await createUser(username, password);
-        res.status(201).json({ username: username });
+        const hashedPassword = await hashPassword(password);
+        await createUser(email, username, hashedPassword);
+        return res.status(201).json({ username: username });
     }
     catch (error) {
         console.error(error.message);
-        res.status(500).json({ error: "Failed to save user" });
+        if (error.errno == 1062) return res.status(409).json({ error: "username or email already exists." });
+        else return res.status(500).json({ error: "server error: failed to save user" });
     }
 }

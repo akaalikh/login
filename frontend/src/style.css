@@ -28,6 +28,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  text-align: center;
 }
 
 .footer {
@@ -77,4 +78,13 @@ input:focus {
 .btn-logout {
   color: #a40000;
   border-color: #a40000;
+}
+
+.link {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
 }
