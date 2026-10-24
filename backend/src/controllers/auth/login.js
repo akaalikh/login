@@ -1,5 +1,6 @@
-import { findUserByUsername } from "../models/user.model.js";
-import { verifyPassword } from "../utils/hash.js";
+import { findUserByUsername } from "../../models/user.model.js";
+import { verifyPassword } from "../../utils/hash.js";
+import { generateJWT } from "../../utils/jwt.js";
 
 const DUMMY_HASH = "$2b$10$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 
@@ -18,7 +19,9 @@ export const login = async (req, res) => {
             return res.status(401).json({ error: "invalid username or password." });
         }
 
-        return res.status(200).json({ username: user.username, access: true });
+        const token = await generateJWT({ sub: user.id }, '2m');
+
+        return res.status(200).json({ username: user.username, token: token });
     }
     catch (error) {
         console.error("login error:", error.message);

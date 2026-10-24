@@ -39,44 +39,39 @@ function clearFields() {
     inpPassword.value = "";
 }
 
-function whoami() {
-    const username = localStorage.getItem("username");
-
-    if (username == null) {
-        txtTitle.innerText = "who are you?"
-        return;
-    }
-    else txtTitle.innerText = username;
-}
-
-async function logout() {
+async function whoami() {
     try {
-        const response = await fetch(`${api}/logout`, {
+        const token = localStorage.getItem("accessToken");
+
+        const response = await fetch(`${api}/user/who`, {
             method: "GET",
             headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ username: localStorage.getItem("username") })
+                'Authorization': `Bearer ${token}`,
+            }
         });
-        if (!response.ok) throw new Error(`Resonse status: ${response.status}`);
+
+        if (!response.ok) throw new Error(`Response status: ${response.status}`);
 
         const result = await response.json();
 
-        console.log(`${result.username} has been logged out.`);
-
+        console.log(result.username);
     }
     catch (error) {
-        console.log(error.message);
+        console.error(error.message);
     }
+}
 
-
+async function logout() {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("username");
+    console.log("logged out.")
 }
 
 async function submit() {
     console.log("submitted.");
-    const username = inpUsername.value;
-    const password = inpPassword.value;
-    const email = inpEmail.value;
+    const username = inpUsername?.value;
+    const password = inpPassword?.value;
+    const email = inpEmail?.value;
 
     if (register) {
         if (!username || !password || !email) {
@@ -85,7 +80,7 @@ async function submit() {
         }
 
         try {
-            const response = await fetch(`${api}/users/register`, {
+            const response = await fetch(`${api}/auth/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -96,11 +91,8 @@ async function submit() {
                 throw new Error(`Response status: ${response.status}`);
             }
 
-            const result = await response.json();
-
-            if (result) {
-                localStorage.setItem("username", result.username)
-            }
+            clearFields();
+            switchUI();
         }
         catch (error) {
             console.error(error.message);
@@ -114,7 +106,7 @@ async function submit() {
         }
 
         try {
-            const response = await fetch(`${api}/users/login`, {
+            const response = await fetch(`${api}/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -129,6 +121,7 @@ async function submit() {
 
             if (result) {
                 localStorage.setItem("username", result.username)
+                localStorage.setItem("accessToken", result.token);
             }
         }
         catch (error) {
